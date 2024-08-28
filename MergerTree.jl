@@ -48,7 +48,7 @@ yr     = 3.1556926e7  # 1 year in seconds
 h      = 0.674        # Normalized Hubble constant
 H0     = h*100e5/mpc  # Hubble constant (in s^-1)
 Ω_M0   = 0.315        # Present matter density parameter
-Ω_Λ0   = 0.685        # Present dark energy density parameter
+Ω_Λ0   = 1 - Ω_M0        # Present dark energy density parameter
 Ω_B0   = 0.049        # Present baryon density parameter
 δ_crit = 1.686        # Critical linear overdensity for collapse
 σ8_obs = 0.811        # Observed RMS over density at R = 8.0/h Mpc
@@ -75,20 +75,38 @@ G0 = 0.57
 #######               F U N C T I O N S                 #######
 #######                                                 #######
 ###############################################################
+println("R E A D I N G  S I G M A  F R O M  A  F I L E ...")
 
-function σ(M)
+data = readdlm("sigma2_CLASS_Om_0.315Ob_0.049.txt")
+Mass = data[:,1]
+σ_sq = data[:,2]
 
-    """ RMS mass fluctuation as a function of halo mass, evaluated
-        at the present (z = 0). This is a convenient yet fairly
-        accurate analytical approximation. """
+println("")
+println(" C R E A T I N G  I N T E R P O L A T I O N  F U N C T I O N  FOR σ^2 ...")
+println("")
 
-    M_eq = 2.4e17*((Ω_M0*(h^2)/0.14)^(-1/2))
-    m    = 8*M/M_eq
-    N    = 0.0845*σ8_obs
+σ_file = Spline1D(Mass, σ_sq)
+σ(m) = sqrt(σ_file(m))
 
-    σ = N*sqrt( (36/(1 + 3*m)) - log(m/(1 + m))^3 )
+data_sigma = 
+println(" D O N E !")
+println("")
 
-end
+
+
+#function σ(M)
+#
+#    """ RMS mass fluctuation as a function of halo mass, evaluated
+#        at the present (z = 0). This is a convenient yet fairly
+#        accurate analytical approximation. """
+
+#    M_eq = 2.4e17*((Ω_M0*(h^2)/0.14)^(-1/2))
+#    m    = 8*M/M_eq
+#    N    = 0.0845*σ8_obs
+#
+#    σ = N*sqrt( (36/(1 + 3*m)) - log(m/(1 + m))^3 )
+#
+#end
 
 function Δ_vir(z)
 
@@ -494,9 +512,10 @@ function M_main(M0, z0, z_max, M_res, DataFileName1, DataFileName2,
 
         # We then get the following file paths:
 
-        FilePath1  = string( CurrentDir, "\\", DataFileName1 )
-        FilePath2  = string( CurrentDir, "\\", DataFileName2 )
-
+        FilePath1  = string( CurrentDir, "/", DataFileName1 )
+        FilePath2  = string( CurrentDir, "/", DataFileName2 )
+        println(FilePath1)
+        println(FilePath2)
         writedlm( FilePath1, [M_main z_main V_vir] )
         writedlm( FilePath2, [M_sub z_sub] )
 
@@ -748,7 +767,7 @@ function FindStarFormingHalos( M0, z0, z_max, M_res, DataFileNameHalos,
         println("")
 
         CurrentDir = string( @__DIR__ )
-        FilePath   = string( CurrentDir, "\\", DataFileNameHalos )
+        FilePath   = string( CurrentDir, "/", DataFileNameHalos )
         writedlm( FilePath, [z_PopII z_acc M_threshold M_acc v_peak] )
     end
 
@@ -759,3 +778,5 @@ function FindStarFormingHalos( M0, z0, z_max, M_res, DataFileNameHalos,
 end
 
 end
+
+
