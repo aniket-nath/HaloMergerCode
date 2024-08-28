@@ -508,7 +508,7 @@ function M_main(M0, z0, z_max, M_res, DataFileName1, DataFileName2,
         # Next we save the data in text files. First we get the
         # directory of the current script (i.e. MergerTree.jl):
 
-        CurrentDir = string( @__DIR__ )
+        CurrentDir = "/home/aniket/Aniket/Aniket_1/NORDITA/Codes"
 
         # We then get the following file paths:
 
